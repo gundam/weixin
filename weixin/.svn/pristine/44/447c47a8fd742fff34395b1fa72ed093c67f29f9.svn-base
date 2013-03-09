@@ -1,0 +1,5 @@
+<?php 
+  $str="餐馆:东北炖";
+  echo substr($str, 0,2);
+
+ ?>

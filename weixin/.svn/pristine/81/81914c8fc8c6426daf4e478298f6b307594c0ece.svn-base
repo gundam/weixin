@@ -1,0 +1,334 @@
+
+<?php
+/**
+  * 微信消息接口wechatCallbackapiTest
+  * //自带类
+  * 验证方法valid
+  * 回调方法responseMsg
+  * 验证token  checkSignature
+  *
+  * //添加类
+*  解析post过来的信息getPostInfo
+*  回复文本的模板textXmlTpl
+*  回复图文的模板newsXmlTpl
+*  给商家的文本发送模板givStoreXmlTpl
+*  
+*
+*  命令参考
+*  
+*  餐馆:+店名/编号
+*  食物:+名称/编号
+*  下单:+店家/食物/地址/姓名/(时间)/手机号，形成订单，插入订单表，返回订单包括订单号
+*  确认:用户回复确认 订单号 回复成功
+*   
+  */
+//var_dump($_SERVER);
+//define your token
+
+//require_once('common/database.php');
+require_once('common/store.php');
+
+define("TOKEN", "weixin");
+$wechatObj = new wechatCallbackapiTest();
+// $wechatObj->valid();
+$wechatObj->getPostInfo();
+$wechatObj->responseMsg();
+
+
+class wechatCallbackapiTest
+{
+
+    private $wx_fromUsername;
+    private $wx_toUsername;
+    private $wx_keyword;
+    private $wx_createTime;
+    private $wx_msgType;
+    private $wx_content;//text属性
+    // private $wx_msgType
+
+    //location属性
+    private $wx_location_X;//纬度
+    private $wx_location_Y;//精度
+    private $wx_scale;
+    private $wx_label;
+
+    //图文消息回复属性
+    private $wx_articleCount;
+    private $wx_title;
+    private $wx_discription;
+    private $wx_picUrl;
+    private $wx_url;
+    //星标标志
+    private $wx_funcFlag;
+
+    private $wx_postObj;//post过来的数据对象
+
+    private $order_number;//订单号，用于确认
+
+
+
+
+
+	public function valid()
+    {
+        $echoStr = $_GET["echostr"];
+
+        //valid signature , option
+        if($this->checkSignature()){
+        	echo $echoStr;
+        	exit;
+        }
+    }
+    
+    //解析数据
+    public function getPostInfo()
+    {       
+        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+        if (!empty($postStr)) {
+             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);    
+             $this->wx_postObj=$postObj;
+              //共有信息
+              $this->wx_fromUsername=$postObj->FromUserName;//用户微信号
+               $this->wx_toUsername=$postObj->ToUserName;//公众帐号微信号
+               $this->wx_createTime=$postObj->Createtime;//发送时间
+            
+
+            //文本消息获取文本信息
+            if ($postObj->MsgType=="text") {
+              $this->wx_msgType="text";
+               // $this->wx_content=$postObj->Content;//发送内容
+               $this->wx_content=trim($postObj->Content);//发送内容
+
+            }
+
+
+
+            //位置消息获取位置
+            if ($postObj->MsgType=="location") { 
+              $this->wx_msgType="location";//设置msgtype
+              $this->wx_location_X=$postObj->Location_X;//获取纬度
+              $this->wx_location_Y=$postObj->Location_Y;//获取进度
+              $this->wx_scale=$postObj->Scale;//获取放大倍数
+              $this->wx_label=$postObj->Label;//获取地理信息
+
+            }
+
+        }
+
+
+
+    }
+
+
+    public function responseMsg()
+    {
+	
+    // 判断          
+		if($this->wx_postObj->MsgType=="text")
+		{ 
+          //文本消息分析(命令？？分词)
+          //  
+          //      命令形式
+            //   $contentAnly=$this->wx_content;
+        $command=$this->get_command();
+
+        if ($command=="下单") {
+          # code...
+           $orderArray=$this->analyseOrderInfo();
+           $contentStr=$orderArray[0];
+           echo $this->textXmlTpl($contentStr);
+           exit();
+
+        }
+        if ($command=="餐馆") {
+          $contentStr="选择餐馆命令";
+          echo $this->textXmlTpl($contentStr);
+          exit();
+        }
+
+
+        if ($command=="食物") {
+          $contentStr="选择食物命令";
+          echo $this->textXmlTpl($contentStr);
+          exit();
+        }
+        if ($command=="确认") {
+          $contentStr="选择确认命令";
+
+          echo $this->textXmlTpl($contentStr);
+          exit();
+        }
+        $contentStr="命令错误";
+      echo $this->textXmlTpl($contentStr);
+       
+
+      
+       
+       //echo $this->textXmlTpl($this->wx_content);
+      // echo $this->newsXmlTpl("测试图文","asufasifasnfasnfn    asafafgag","http://202.119.236.249/weixin/pic/2.jpg","http://202.119.236.249/weixin/common/database.php");
+		}
+		else{
+
+          $rangeArray=$this->calculate_range($this->wx_location_X,$this->wx_location_Y,1);
+   
+             $store=new Store();
+             $storeInfo=$store->get_srore_byLocation($rangeArray['maxLat'],$rangeArray['minLat'],$rangeArray['maxLng'],$rangeArray['minLng']);
+              $temp;
+              foreach ($storeInfo as $key => $value) {
+                $temp .="$value[0],";
+              }
+             
+              //$contentStr=$temp;
+             
+             $contentStr=$this->wx_location_X.'   '.$this->wx_location_Y.'      '.$this->wx_label.'  转化后:   '.$rangeArray['maxLat'].'   '.$rangeArray[
+               'minLat'].'    '.$rangeArray['maxLng'].'      '.$rangeArray['minLng'];
+            echo $this->textXmlTpl($contentStr);
+
+
+
+        }
+
+    }
+		
+	private function checkSignature()
+	{
+          $signature = $_GET["signature"];
+          $timestamp = $_GET["timestamp"];
+          $nonce = $_GET["nonce"];	
+        		
+		$token = TOKEN;
+		$tmpArr = array($token, $timestamp, $nonce);
+		sort($tmpArr);
+		$tmpStr = implode( $tmpArr );
+		$tmpStr = sha1( $tmpStr );
+		
+		if( $tmpStr == $signature ){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+
+    // 文本消息回复模板
+    public function textXmlTpl($contentStr)
+    {
+        
+                $time = time();
+                $textTpl = "<xml>
+                            <ToUserName><![CDATA[%s]]></ToUserName>
+                            <FromUserName><![CDATA[%s]]></FromUserName>
+                            <CreateTime>%s</CreateTime>
+                            <MsgType><![CDATA[%s]]></MsgType>
+                            <Content><![CDATA[%s]]></Content>
+                            <FuncFlag>0</FuncFlag>
+                            </xml>";             
+     
+                    $msgType = "text";
+                          
+                    $resultStr = sprintf($textTpl, $this->wx_fromUsername, $this->wx_toUsername, $time, $msgType, $contentStr);
+                    return $resultStr;
+             
+         
+    }
+
+    
+
+    // // 图文回复模板
+    public function newsXmlTpl($title,$description,$picurl,$url)
+    {
+
+        # code...
+        $time=time();
+        $newsTpl="  <xml>
+          <ToUserName><![CDATA[%s]]></ToUserName>
+           <FromUserName><![CDATA[%s]]></FromUserName>
+           <CreateTime>%s</CreateTime>
+         <MsgType><![CDATA[%s]]></MsgType>
+         <Content><![CDATA[%s]]></Content>
+     <ArticleCount>1</ArticleCount>
+     <Articles>
+     <item>
+     <Title><![CDATA[%s]]></Title>
+     <Discription><![CDATA[%s]]></Discription>
+     <PicUrl><![CDATA[%s]]></PicUrl>
+     <Url><![CDATA[%s]]></Url>
+     </item>
+     
+     
+     </Articles>
+     <FuncFlag>1</FuncFlag>
+    </xml> ";
+
+  
+        $MsgType="news";
+       $resultStr=sprintf($newsTpl,$this->wx_fromUsername,$this->wx_toUsername,$time,$MsgType,$this->wx_content,$title,$description,$picurl,$url);
+
+        return $resultStr;
+        
+    }
+
+
+    //发送给商家的文本模板
+    public function givStoreXmlTpl($contentStr,$toStoreName)
+    {
+      // $time=time();
+      $time = time();
+                $textTpl = "<xml>
+                            <ToUserName><![CDATA[%s]]></ToUserName>
+                            <FromUserName><![CDATA[%s]]></FromUserName>
+                            <CreateTime>%s</CreateTime>
+                            <MsgType><![CDATA[%s]]></MsgType>
+                            <Content><![CDATA[%s]]></Content>
+                            <FuncFlag>0</FuncFlag>
+                            </xml>";             
+     
+                    $msgType = "text";
+                          
+                    $resultStr = sprintf($textTpl, $this->wx_fromUsername, $toStoreName, $time, $msgType, $contentStr);
+                    return $resultStr;
+
+    }
+    
+
+
+    // 计算经纬度范围
+    // 
+    public function calculate_range($myLat,$myLng,$kilo)
+    {
+          $range = 180 / pi() * $kilo / 6372.797;     //里面的 1 就代表搜索 1km 之内，单位km  
+         $lngR = $range / cos($myLat * pi() / 180);  
+          $maxLat=bcadd($myLat,$range,15);  
+         $minLat=bcsub($myLat, $range,15);
+         $maxLng = bcadd($myLng, $lngR,15);//最大经度  
+            $minLng = bcsub($myLng, $lngR,15); 
+            $rangeArray=array("maxLat"=>$maxLat,"minLat"=>$minLat,"maxLng"=>$maxLng,"minLng"=>$minLng,"range"=>$range,"lngR"=>$lngR);
+            return $rangeArray;
+    }
+
+
+    // 获取命令
+    // 
+    public function get_command()
+    {
+      # code...
+      $str=$this->wx_content;
+      $command=substr($str, 0,6);
+      return $command;
+    }
+
+    //分析下单数据 （下单:店家编号（？名称），食物编号（？名称））？默认（命令）：地址，姓名，手机号
+    //
+    public function analyseOrderInfo()
+    {
+      // code...分割使用explode函数,返回一个函数
+      $str=$this->wx_content;
+     $orderDataArray= explode(',', substr($str, 7));
+      return $orderDataArray;
+
+    }
+
+
+}
+
+?>

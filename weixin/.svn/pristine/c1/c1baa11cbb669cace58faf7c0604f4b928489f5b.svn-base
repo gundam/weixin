@@ -1,0 +1,13 @@
+<?php 
+
+	require 'database.php';
+
+	$sql=new Database();
+
+	$answer=$_REQUEST['answer'];
+
+	$data = array('value' => $answer );
+	$sql->insert("answer",$data);
+
+
+ ?>

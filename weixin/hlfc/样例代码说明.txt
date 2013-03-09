@@ -1,0 +1,3 @@
+1.\PHP\platform_api.php 连接 海量云分词API 所封装的函数代码；
+2.\PHP\semantic.php和\PHP\result.php 测试API的PHP代码样例；
+3.\测试用输入XML\ 目录内为测试可以参考的XML文件；

@@ -1,0 +1,148 @@
+<?php 
+  /**
+  * 商店类
+  * 商店编号1
+  * 1.查询商店id
+  * 2.查询商店名称
+  * 3.查询商店号码
+  * 4.查询商店经纬度
+  * 5.查询商店地址
+  * 搜索功能
+  * 7.*根据经纬度获取附近商家
+  * 8.根据食物名模糊查找商家
+  * //给后台
+  * 列出所有商店名称
+  * 增加店家
+  * 删除店家			
+  */
+  require_once 'database.php';
+  class Store 
+  {	
+  	private $con;
+  	
+  	function Store()
+  	{
+  		$this->con=new Database();
+
+      // $temp=$this->get_srore_byLocation(1,1,1,1);
+      // var_dump($temp);
+  	}
+
+  	//@1查询商家id
+  	//
+  	public function get_store_id()
+  	{
+  		# code...
+  		
+  	}
+
+  	// 查询商店名称
+  	// 
+  	public function get_store_wxName($id)
+  	{  
+      //$str= "select wx_food_name from wx_food";
+
+  		
+  	}
+
+
+
+  	// 查询商店号码
+  	// 
+  	public function get_store_wxNumber()
+  	{
+  		
+  	}
+
+  	// 查询商店经纬度
+  	// 
+  	
+  	public function get_store_location()
+  	{
+  		# code...
+  	}
+  	// 查询商店地址
+  	// 
+
+  	// 后台
+  	// 列出所有商店名称
+  	// 
+  	public function get_all_store_wxName()
+  	{
+  		# code...
+  	}
+
+
+  	//根据经纬度获取附近商家
+  	//
+  	public function get_srore_byLocation($maxLat,$minLat,$maxLng,$minLng)
+  	{
+
+         $str="select wx_store_wxName from wx_store where wx_store_longitude between '1' and '1111' and wx_store_latitude between '1' and  '1111'";
+          $sql=$this->con->query($str);   
+
+        // $store_name[]="";
+         while ($temp=mysql_fetch_array($sql)) {
+           # code...
+           $store_name[]=$temp;
+         }
+         if (!isset($store_name)) {
+           $store_name[]="";
+         }
+         return $store_name;
+
+  	}
+
+
+    public function get_food_byStore($food_name)
+    {
+        $str="select * from wx_food where wx_food_name like '%$food_name%'";
+        $rt=$this->con->query($str);
+        while ($temp=mysql_fetch_array($rt)) {
+            $storeNameArray[] .=$temp["wx_food_belong"];
+        }
+        if (!isset($storeNameArray)) {
+          $storeNameArray[]="";
+        } 
+        //返回数组
+        return $storeNameArray;
+    }
+
+    //搜索商店
+    public function get_store_bySearch($likeStoreName)
+    {
+         $queryStoreStr="select * from wx_store where wx_store_wxName like '%$likeStoreName%' or wx_store_id = '$likeStoreName'";
+     
+     // $queryStoreStr="select * from wx_store where wx_store_name like '%$this->wx_content%' or wx_store_id = '$this->wx_content'";
+     $sql=$this->con->query($queryStoreStr);
+       // var_dump($queryStoreStr);
+        if (mysql_num_rows($sql)) {
+          $storeInfoStr="餐馆是:";
+          while ($temp=mysql_fetch_array($sql)) {
+            // code...
+            $storeInfoStr .="<br>".$temp['wx_store_id'].":".$temp['wx_store_wxName'];
+          }
+        }else
+        {
+
+        $storeInfoStr="没有餐馆";
+        }
+
+
+        return $storeInfoStr;
+
+
+    }
+
+    //根据id找商店所有信息
+    public function get_storeInfo_byID($store_id)
+    {
+      
+    }
+
+  }
+
+// new Store();
+
+
+ ?>

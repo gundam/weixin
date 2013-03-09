@@ -1,0 +1,15 @@
+<?php 
+	require_once("database.php");
+
+	new Database();
+
+	echo $_REQUEST['wx_store_wxNumber']." <br>";
+	echo $_REQUEST['wx_stroe_wxName']." <br>";
+	echo $_REQUEST['wx_store_address']." <br>";
+	echo $_REQUEST['wx_store_longitude']." <br>";
+
+	echo $_REQUEST['wx_store_latitude']." <br>";
+
+
+
+ ?>

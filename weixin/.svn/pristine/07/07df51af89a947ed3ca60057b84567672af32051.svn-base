@@ -1,0 +1,66 @@
+<?php 
+	require_once("database.php");
+
+	$sql=new Database();
+
+	$action=$_REQUEST['action'];//获取动作
+
+	//增加商店
+	if ($action=='addStore') {
+		# code...
+	$wx_store_wxNumber  = $_REQUEST['wx_store_wxNumber'];
+	$wx_store_wxName	= $_REQUEST['wx_store_wxName'];
+	$wx_store_address	= $_REQUEST['wx_store_address'];
+	$wx_store_longitude	= $_REQUEST['wx_store_longitude'];//经度
+
+	$wx_store_latitude	= $_REQUEST['wx_store_latitude'];//纬度
+
+	
+	$data=array("wx_store_wxNumber"=>$wx_store_wxNumber,"wx_store_wxName"=>$wx_store_wxName,"wx_store_address"=>$wx_store_address,"wx_store_longitude"=>$wx_store_longitude,"wx_store_latitude"=>$wx_store_latitude);
+
+
+	echo $sql->insert("wx_store",$data);
+	
+    exit();
+	}
+
+
+
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+
+	if ($action=='') {
+		# code...
+		exit();
+	}
+
+	
+	
+ ?>

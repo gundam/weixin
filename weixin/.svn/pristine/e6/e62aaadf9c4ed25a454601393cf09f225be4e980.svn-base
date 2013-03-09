@@ -1,0 +1,104 @@
+<?php 
+
+	/**
+	* 食品类
+	*  获取食品id
+	*  获取食品单价
+	*  获取食品店家
+	*  获取食品名称
+	* .根据商店找食品
+	* 
+	* //后台
+	* 增加食品
+	* 删除食品
+	* 查询食品
+	* 
+	*/
+
+	require_once 'database.php';
+
+	class Food
+	{
+		private $con;
+		function Food()
+		{
+			# code...
+			# 
+			$this->con=new Database();
+		}
+
+		// 获取食品id
+		public function get_food_id($value='')
+		{
+			# code...
+			# 
+		}
+		// 获取食品单价
+		public function get_food_price($value='')
+		{
+			# code...
+		}
+
+		// 获取食品名称
+		// 
+		public function get_food_name($value='')
+		{
+			# code...
+		}
+
+		//获取食品店家
+		//
+		public function get_food_toStore($value='')
+		{
+			# code...
+		}
+
+		// 根据商店找食品
+		// 
+		public function get_food_byStore($wx_store_id)
+		{
+			$str="select * from wx_food where wx_food_belong=$wx_store_id";
+			$sql=$this->con->query($str);
+			return $sql;
+
+		}
+
+
+
+
+
+
+
+		//增加食品
+
+		public function add_food($wx_food_name,$wx_food_belong,$wx_food_price,$wx_food_img)
+		{
+			# code...
+		}
+
+
+		// 删除食品
+		// 
+		public function delete_food($value='')
+		{
+			# code...
+		}
+
+
+		// 查询食品
+		// 
+		public function find_food($value='')
+		{
+			# code...
+		}
+
+
+
+
+
+
+	}
+
+
+
+ ?>

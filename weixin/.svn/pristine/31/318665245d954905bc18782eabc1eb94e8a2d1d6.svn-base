@@ -1,0 +1,101 @@
+<?php 
+
+	/**
+	* 食品类
+	*  获取食品id
+	*  获取食品单价
+	*  获取食品店家
+	*  获取食品名称
+	* .根据食品找商店
+	* 
+	* //后台
+	* 增加食品
+	* 删除食品
+	* 查询食品
+	* 
+	*/
+
+	require_once 'database.php';
+
+	class Food
+	{
+		private $con;
+		function Food()
+		{
+			# code...
+			# 
+			$this->con=new Database();
+		}
+
+		获取食品id
+		public function get_food_id($value='')
+		{
+			# code...
+			# 
+		}
+		// 获取食品单价
+		public function get_food_price($value='')
+		{
+			# code...
+		}
+
+		// 获取食品名称
+		// 
+		public function get_food_name($value='')
+		{
+			# code...
+		}
+
+		//获取食品店家
+		//
+		public function get_food_toStore($value='')
+		{
+			# code...
+		}
+
+		// 根据食品找商店
+		// 
+		public function get_store_byFood($value='')
+		{
+			# code...
+		}
+
+
+
+
+
+
+
+		//增加食品
+
+		public function add_food($value='')
+		{
+			# code...
+		}
+
+
+		// 删除食品
+		// 
+		public function delete_food($value='')
+		{
+			# code...
+		}
+
+
+		// 查询食品
+		// 
+		public function find_food($value='')
+		{
+			# code...
+		}
+
+
+
+
+
+
+	}
+
+
+
+ ?>

@@ -1,0 +1,10 @@
+<?php 
+
+	echo $_REQUEST['wx_store_wxNumber'];
+	echo $_REQUEST['wx_stroe_wxName'];
+	echo $_REQUEST['wx_store_address'];
+	echo $_REQUEST['wx_store_longitude'];
+
+	echo $_REQUEST['wx_store_latitude'];
+
+ ?>

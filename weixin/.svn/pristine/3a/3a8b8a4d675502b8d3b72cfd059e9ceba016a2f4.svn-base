@@ -1,0 +1,55 @@
+<?php 
+
+/**
+* 分词类
+*/
+require_once("platform_api.php");		
+class Hlfc
+{
+	private $surl="http://freeapi.hylanda.com/rest/se/segment/realtime";
+	private $sSecret= '1c34c03e0c95151f278272d90c8dc1a2b1e05770';
+	private $sAppkey='5815049766379871523';
+	function __construct($str)
+	{
+
+		$content = '<?xml version="1.0" encoding="UTF-8"?> 
+<Root>
+<Input>
+<Property Name="Content">'.$str.'</Property> 
+  </Input>  
+  <ProcessList Template="">   
+  	<Resource ID="0" Adapter="DA_HLSegment" OutputXml="true" IgnoreFailed="true" >  
+		  <Param Name="Input" Value="Content" /> 
+  		<Param Name="Output" Value="HLSegToken" /> 
+  		<Param Name="CustomCalcSign" Value="POS_TAG" /> 
+  		<Param Name="OutputFieldSign" Value="" /> 
+  	</Resource> 
+  		<Resource ID="1000" Adapter="ClearSegmentProxy" OutputXml="false" IgnoreFailed="true" />   
+  </ProcessList>  
+</Root>';
+		 $params['appkey']=$this->sAppkey;
+		 $params['v']='1.0';
+		 $params['time']=time();		
+		 $params['xmlparam']=$content;
+		 $params['format']='JSON';
+
+
+		$api = new platform_api($this->sSecret);
+
+		 $ret = $api->execute($this->surl,$params);
+
+		if ($ret === false) {
+			echo "请求失败";
+		}else{
+				
+
+			echo '<br>'.$ret;
+		}
+	}
+}
+
+
+
+//new Hlfc("测试内容");
+
+ ?>

@@ -1,0 +1,25 @@
+<?php 
+	require_once("database.php");
+
+	$sql=new Database();
+
+	$wx_store_wxNumber  = $_REQUEST['wx_store_wxNumber'];
+	$wx_store_wxName	= $_REQUEST['wx_store_wxName'];
+	$wx_store_address	= $_REQUEST['wx_store_address'];
+	$wx_store_longitude	= $_REQUEST['wx_store_longitude'];
+
+	$wx_store_latitude	= $_REQUEST['wx_store_latitude'];
+
+	$store_str="insert into wx_store (wx_store_wxNumber,wx_store_wxName,wx_store_address,wx_store_longitude,wx_store_latitude) 
+
+	values ($wx_store_wxNumber,$wx_store_wxName,$wx_store_address,$wx_store_longitude,$wx_store_latitude)
+	";
+	var_dump($store_str);
+	$insertRt=$sql->query($store_str);
+	if ($insertRt) {
+		echo "insert success";
+	}else{
+
+		echo "insert faild";
+	}
+ ?>

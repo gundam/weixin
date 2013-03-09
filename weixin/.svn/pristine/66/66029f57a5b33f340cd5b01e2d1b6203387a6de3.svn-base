@@ -1,0 +1,898 @@
+
+<?php
+/**
+  * 微信消息接口wechatCallbackapiTest
+  * //自带类
+  * 验证方法valid
+  * 回调方法responseMsg
+  * 验证token  checkSignature
+  *
+  * //添加类
+*  解析post过来的信息getPostInfo
+*  回复文本的模板textXmlTpl
+*  回复图文的模板newsXmlTpl
+*  给商家的文本发送模板givStoreXmlTpl
+*  
+*
+*  命令参考
+*  
+*  餐馆:+店名/编号
+*  食物:+名称/编号
+*  下单:+店家/食物/地址/姓名/(时间)/手机号，形成订单，插入订单表，返回订单包括订单号
+*  确认:用户回复确认 订单号 回复成功
+*
+*
+*  编号:
+*  商店1
+*  用户2
+*  食物3
+*  订单4
+  */
+//var_dump($_SERVER);
+//define your token
+
+require_once('common/database.php');
+
+require_once('./common/store.php');
+ require_once('./common/hlfc.php');
+ require_once('./common/food.php');
+ require_once('./common/user.php');
+
+ require_once('./common/order.php');
+define("TOKEN", "weixin");
+
+session_start();
+
+       
+
+
+//echo $aa;
+
+$wechatObj = new wechatCallbackapiTest();
+// $wechatObj->valid();
+$wechatObj->getPostInfo();
+$wechatObj->responseMsg();
+
+
+class wechatCallbackapiTest
+{
+
+    private $wx_fromUsername;
+    private $wx_toUsername;
+    private $wx_keyword;
+    private $wx_createTime;
+    private $wx_msgType;
+    private $wx_content;//text属性
+    // private $wx_msgType
+
+    //location属性
+    private $wx_location_X;//纬度
+    private $wx_location_Y;//精度
+    private $wx_scale;
+    private $wx_label;
+
+    //图文消息回复属性
+    private $wx_articleCount;
+    private $wx_title;
+    private $wx_discription;
+    private $wx_picUrl;
+    private $wx_url;
+    //星标标志
+    private $wx_funcFlag;
+
+    private $wx_postObj;//post过来的数据对象
+
+    private $order_number;//订单号，用于确认
+
+    private $con;
+
+
+
+	public function valid()
+    {
+        $echoStr = $_GET["echostr"];
+
+        //valid signature , option
+        if($this->checkSignature()){
+        	echo $echoStr;
+        	exit;
+        }
+    }
+    
+    //解析数据
+    public function getPostInfo()
+    {       
+        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+        if (!empty($postStr)) {
+             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);    
+             $this->wx_postObj=$postObj;
+              //共有信息
+              $this->wx_fromUsername=$postObj->FromUserName;//用户微信号
+               $this->wx_toUsername=$postObj->ToUserName;//公众帐号微信号
+               $this->wx_createTime=$postObj->Createtime;//发送时间
+            
+
+            //文本消息获取文本信息
+            if ($postObj->MsgType=="text") {
+              $this->wx_msgType="text";
+               // $this->wx_content=$postObj->Content;//发送内容
+               $this->wx_content=trim($postObj->Content);//发送内容
+
+            }
+
+
+
+            //位置消息获取位置
+            if ($postObj->MsgType=="location") { 
+              $this->wx_msgType="location";//设置msgtype
+              $this->wx_location_X=$postObj->Location_X;//获取纬度
+              $this->wx_location_Y=$postObj->Location_Y;//获取进度
+              $this->wx_scale=$postObj->Scale;//获取放大倍数
+              $this->wx_label=$postObj->Label;//获取地理信息
+
+            }
+
+        }
+
+
+
+    }
+
+
+    public function responseMsg()
+    {
+	 // $this->con=new Database();
+    
+      //   var_dump($storeInfoStr);
+    
+      // var_dump($foodInfoStr);
+    // 判断   
+    //   
+           $food=new Food();
+           $store=new Store();
+           $order=new Order();
+           $user=new User();
+           $sql=new Database();
+
+           // echo $food->get_food_bySearch("1");
+           // echo $store->get_store_bySearch("1");
+           // $this->wx_postObj->MsgType=="text"
+           
+          //  echo $rt=$user->get_user_id("oOPeljsfvhAmG1-Yt-B9");
+          //  if ($rt=="false") {
+        
+          //   echo $this->textXmlTpl("你没有注册,请先注册");
+          //   $userData=array("wx_user_wxNumber"=>$this->wx_fromUsername);//array数据加入数据库
+          //   $user->add_user($userData);
+
+          //   exit();
+          // }else{
+          //   echo "成";
+          //   echo $this->textXmlTpl("你已经注册");
+          //   exit();
+          // }
+          // 
+          //  $nameCheck=$user->get_user_name("oOPeljsfvhAmG1-Yt-B9pxdX3V8E");
+          // if ($nameCheck=="false") {
+          //   echo "false";
+          //   echo $this->textXmlTpl("没有注册姓名");
+          //   exit();
+          // }else{
+          //   echo "not false";
+          //   echo( $this->textXmlTpl("姓名注册成功"));
+          //   exit();
+          // }
+          // 
+          // 
+          //  // 
+          //  
+     //       $test=new Hlfc("牛肉面");
+     //    $temp=json_decode($test->outoutValue(),true);
+     //   $a=$temp['response']['Result']['Resource']['AnalyzeResult']['Annotations']['Item'];
+     // var_dump($a);
+     //  echo "数组。。。。".count($a);
+     //   for ($i=0; $i < count($a); $i++) { 
+     //     echo $tempStr .=$a[$i]['@attributes']['ExtSign'].$a[$i]['@attributes']['Text']."    ";
+     //   }
+     // var_dump($tempStr);
+     //   // $contentStr=$tempStr;
+          //  
+          //  
+            
+		if($this->wx_postObj->MsgType=="text")
+		{ 
+
+
+
+          // echo $this->givStoreXmlTpl("test~~~","oOPeljuOxnx98WBs88mL6__iwa08");
+          // exit();
+          //检查是否是第一次登录
+          //注册信息，填写地址，电话，姓名
+
+         // echo $this->textXmlTpl("测试");
+          // exit();
+           // $rt=$user->get_user_id($this->wx_fromUsername);
+           // 
+          if ($this->wx_content=='h') {
+            
+            $str="详细帮助 1.你可输入食物名或者商店名进行查询,会给你最相近的餐馆或者食物的信息,你可通过编号继续查询 2.如果你记得食物或者餐馆编号,直接输入编号,商店编号以 1 开头,食物编号以 3 开头 3.下单格式为 '下单:(商店名或编号),(食物名或编号)'将以你注册的默认地址，姓名，电话号码运送.";
+          echo $this->textXmlTpl($str);
+         exit();
+         }
+
+
+
+          $command=$this->get_command();
+         $rt=$user->get_user_id($this->wx_fromUsername);
+           
+         // echo $this->textXmlTpl($rt);
+          // exit();
+          if (($rt=="false")==1) {
+        
+            echo $this->textXmlTpl("你没有注册,请先注册,请注册地址,格式为  地址:(你的地址名)");
+            $userData=array("wx_user_wxNumber"=>$this->wx_fromUsername);//array数据加入数据库
+            $user->add_user($userData);
+
+            exit();
+          }
+          // $this->test();
+
+          if ($command=="地址") {
+          $orderArray=$this->analyseOrderInfo();
+          $rt=$sql->update("wx_user","wx_user_address",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+          echo $this->textXmlTpl("地址注册成功,请注册常用电话号码,格式为  号码:(你的号码)");
+          exit();
+        }
+
+        if ($command=="号码") {
+          $orderArray=$this->analyseOrderInfo();
+          $rt=$sql->update("wx_user","wx_user_telphone",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+          echo $this->textXmlTpl("号码注册成功,请注册姓名,格式为  姓名:(你的号码)");
+          exit();
+        }
+
+        if ($command=="姓名") {
+          $orderArray=$this->analyseOrderInfo();
+          $rt=$sql->update("wx_user","wx_user_name",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+          
+        //echo $this->textXmlTpl($rt);
+         echo $this->textXmlTpl("姓名注册成功,恭喜你注册成功,现在只要你输入想吃的东西或者商店,就能获取信息.更多信息请回复 h 查询～～");
+          exit();
+        }
+          // else{
+
+          //   echo $this->textXmlTpl("你已经注册");
+          //   exit();
+          // }
+         
+          $nameCheck=$user->get_user_name($this->wx_fromUsername);
+          
+          if ($nameCheck=="false") {
+            echo $this->textXmlTpl("没有注册姓名");
+            exit();
+          }
+          // else{
+
+          //   echo( $this->textXmlTpl("姓名注册成功"));
+          //   exit();
+          // }
+
+          $addressCheck=$user->get_user_address($this->wx_fromUsername);
+          //$this->test($addressCheck);
+          if ($addressCheck=="false") {
+            echo $this->textXmlTpl("没有注册地址");
+            exit();
+          }
+
+          $telphoneCheck=$user->get_user_telphone($this->wx_fromUsername);
+          if ($telphoneCheck=="false") {
+            
+            echo $this->textXmlTpl("没有注册号码");
+            exit();
+          }
+          //文本消息分析(命令？？分词)
+          //  
+          //      命令形式
+            //   $contentAnly=$this->wx_content;
+            //   
+            //   
+            //   
+            //   
+        // $command=$this->get_command();
+
+        // if ($command=="地址") {
+        //   $orderArray=$this->analyseOrderInfo();
+        //   $rt=$sql->update("wx_user","wx_user_address",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+        //   echo $this->textXmlTpl("地址注册成功");
+        //   exit();
+        // }
+
+        // if ($command=="号码") {
+        //   $orderArray=$this->analyseOrderInfo();
+        //   $rt=$sql->update("wx_user","wx_user_telphone",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+        //   echo $this->textXmlTpl("号码注册成功");
+        //   exit();
+        // }
+
+        // if ($command=="姓名") {
+        //   $orderArray=$this->analyseOrderInfo();
+        //   $rt=$sql->update("wx_user","wx_user_name",$orderArray[0],"wx_user_wxNumber",$this->wx_fromUsername);
+        //   echo $this->textXmlTpl("姓名注册成功");
+        //   exit();
+        // }
+
+
+
+        if ($command=="下单") {
+          # code...
+           //获取商家id，食品id，姓名,地址，电话
+           $orderArray=$this->analyseOrderInfo();
+           
+           // public function add_order($wx_order_storeId,$wx_order_foodId,$wx_order_userId,$wx_order_address,wx_order_telphone)
+           // 如果分裂开来的数组长度为5,检查一遍check函数
+           if (count($orderArray)==5) 
+           {  
+
+
+             $wx_order_storeId=$orderArray[0];
+
+             $checkstore=$sql->checkFun("wx_store","wx_store_id",$wx_order_storeId);
+
+             if ($checkstore==false) {
+                echo $this->textXmlTpl("店名id错误，请检查");
+                exit;
+             }else{
+
+              //获取店名
+              $order_store_name_toUser=$checkstore['wx_store_wxName'];
+             }
+
+             $wx_order_foodId =$orderArray[1];
+
+             $checkfood=$sql->checkFun("wx_food","wx_food_id",$wx_order_foodId);
+             if ($checkfood==false) {
+                echo $this->textXmlTpl("食物id错误，请检查");
+                exit;
+             }else{
+
+              $order_food_name_toUser= $checkfood['wx_food_name'];
+
+             }
+
+             $wx_order_user=$orderArray[2];//通过微信号查找
+
+             $wx_order_userId=$user->get_user_id($this->wx_fromUsername);
+            
+
+             $wx_order_address=$orderArray[3];
+
+             $wx_order_telphone=$orderArray[4];//
+
+             $rt=$order->add_order($wx_order_storeId,$wx_order_foodId,$wx_order_userId['wx_user_id'],$wx_order_address,$wx_order_telphone,"0");
+
+             if ($rt==false) {
+               echo $this->textXmlTpl("发生错误");
+               exit;
+             }else{
+
+
+              $contentStr="你的订单号是".$rt.'  订单是'.$order_store_name_toUser.'的'.$order_food_name_toUser.'   地址是'.$wx_order_address.'   姓名是'.$wx_order_user.'   请回复 确认+订单号，如 确认01';
+               echo $this->textXmlTpl($contentStr);
+               exit;
+             }
+           }
+            
+
+            if (count($orderArray)==2) {
+             
+              //  $this->test("下单测试");
+                $wx_order_storeId=$orderArray[0];
+             $checkstore=$sql->checkFun("wx_store","wx_store_id",$wx_order_storeId);
+             if ($checkstore==false) {
+                echo $this->textXmlTpl("店名id错误，请检查");
+                exit;
+             }else{
+
+              //获取店名
+              $order_store_name_toUser=$checkstore['wx_store_wxName'];
+             //$this->test($order_store_name_toUser);
+             }
+
+             $wx_order_foodId =$orderArray[1];
+
+             $checkfood=$sql->checkFun("wx_food","wx_food_id",$wx_order_foodId);
+             if ($checkfood==false) {
+                echo $this->textXmlTpl("食物id错误，请检查");
+                exit;
+             }else{
+
+              $order_food_name_toUser= $checkfood['wx_food_name'];
+                // $this->test($order_food_name_toUser);
+             }
+
+             // $this->test("ss");
+               $userInfo= $user->get_user_all_info($this->wx_fromUsername);
+                //获取所有信息
+              // $this->test("ss");
+              $wx_order_userId=$userInfo['wx_user_id'];
+             //  $this->test($wx_order_userId);
+
+              $wx_order_user=$userInfo['wx_user_name'];
+              // $this->test($wx_order_user);
+
+              $wx_order_address=$userInfo['wx_user_address'];
+              // $this->test($wx_order_address);
+
+
+              $wx_order_telphone= $userInfo['wx_user_telphone'];
+              // $this->test($wx_order_telphone);
+
+              $rt= $order->add_order($wx_order_storeId,$wx_order_foodId,$wx_order_userId,$wx_order_address,$wx_order_telphone,"0");
+
+               if ($rt==false) {
+               echo $this->textXmlTpl("发生错误");
+               exit;
+             }else{
+
+
+              $contentStr="你的订单号是".$rt.'  订单是'.$order_store_name_toUser.'的'.$order_food_name_toUser.'   地址是'.$wx_order_address.'   姓名是'.$wx_order_user.'   请回复 确认+订单号，如 确认01';
+               echo $this->textXmlTpl($contentStr);
+               exit;
+             }
+            }
+
+
+           //  if ($rt==true) {
+           //    $storeName=$store->get_store_wxName($orderArray[0]);
+           //    $foodName= $food->get_food_name($orderArray[1]);
+           //    if (count($orderArray)==2) {
+           //    $rt=$user->find_user($this->wx_fromUsername);
+              
+
+           //    if ($rt==false) {
+           //        echo "你没有填写地址和电话"  ;
+           //    }else{
+
+           //      $address=$rt['wx_user_address'];
+           //      $username=$rt['wx_user_wx_user_name'];
+           //      $telphone=$rt['wx_user_telphone'];
+
+
+           //    }
+           //  }else{
+
+           //      $address=$orderArray['address'];
+           //  $telphone=$orderArray['telphone'];
+
+           //  }
+            
+           //  $contentStr=$storeName.",".$foodName.",".$address.",".$username.",".$telphone;
+
+           //  }
+            
+           // echo $this->textXmlTpl($contentStr);
+           // exit();
+
+        }
+
+
+
+        if ($command=="餐馆") {
+          $contentStr="选择餐馆命令";
+          echo $this->textXmlTpl($contentStr);
+          exit();
+        }
+
+
+        if ($command=="食物") {
+          $contentStr="选择食物命令";
+          echo $this->textXmlTpl($contentStr);
+          exit();
+        }
+        if ($command=="确认") {
+          $contentStr="选择确认命令";
+          $orderArray = $this->analyseOrderInfo();
+          //$this->test("sssss");
+          $rt=$sql->checkFun("wx_order","wx_order_id",$orderArray[0]);
+          // echo $this->textXmlTpl($orderArray[0]);
+         // $this->test($orderArray[0]);
+          //echo $this->textXmlTpl($orderArray[0]);
+          if ($rt==false) {
+            echo $this->textXmlTpl("订单号错误");
+            exit();
+          }else{
+
+              //$this->test("wafafa");
+              $order->create_order_status("1",$orderArray[0]);
+             
+              $orderInfo=$order->get_one_order($orderArray[0]);
+              // $this->test("wafafa");
+              
+              // echo $this->textXmlTpl($orderInfo['wx_order_id'].'   '.$orderInfo['wx_order_storeId'].'    '.$orderInfo['wx_order_foodId']);
+            
+               echo $this->givStoreXmlTpl("test~~~","oOPeljuOxnx98WBs88mL6__iwa08");
+
+             exit();
+
+          }
+
+        }
+          //查询订单
+          if ($command=="查询") {
+            
+            $orderArray=$this->analyseOrderInfo();
+             $rt=$sql->checkFun("wx_order","wx_order_id",$orderArray[0]);
+        
+          if ($rt==false) {
+            echo $this->textXmlTpl("订单号错误");
+            exit();
+          }else{
+
+             // $this->test("wafafa");
+              // $order->create_order_status("1",$orderArray[0]);
+             
+              $orderInfo=$order->get_one_order($orderArray[0]);
+             
+            echo $this->textXmlTpl($orderInfo['wx_order_id'].'   '.$orderInfo['wx_order_storeId'].'    '.$orderInfo['wx_order_foodId']);
+            
+              // echo $this->givStoreXmlTpl("test~~~","oOPeljuOxnx98WBs88mL6__iwa08");
+
+             exit();
+
+
+
+          }
+          
+        }
+
+
+         //ID搜寻
+          if(is_numeric($this->wx_content)){
+
+            $searchKey=substr($this->wx_content, 0,1);
+            if ($searchKey=="1") {
+              # code...商店具体的食物列表
+             $foodList=$store->get_food_byStore($this->wx_content);
+             for ($i=0; $i < count($foodList); $i++) { 
+                $foodStr .=$foodList[$i].'\n'; 
+             }
+              $this->test($foodStr);
+            }
+            if ($searchKey=="3") {
+            
+              //列出食物信息
+             $foodName=$food->get_food_bySearch($this->wx_content);
+            
+
+             $this->test($foodName);
+            }
+
+            $this->test("搜索错误");
+            
+          }
+            //
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // $contentStr="命令错误";
+      //echo $this->textXmlTpl($contentStr);
+      //分词部分
+       $test=new Hlfc($this->wx_content);
+
+       // $this->test("sadasf");
+        $temp=json_decode($test->outoutValue(),true);
+       $a=$temp['response']['Result']['Resource']['AnalyzeResult']['Annotations']['Item'];
+       for ($i=0; $i < count($a); $i++) { 
+         $tempStr .=$a[$i]['@attributes']['ExtSign'].$a[$i]['@attributes']['Text']."    ";
+         if ($a[$i]['@attributes']['ExtSign']=="1048576") {
+           $fcKeyword[] .=$a[$i]['@attributes']['Text'];
+         }
+       }
+
+       if(trim($tempStr)==""){
+
+        $tempStr=$a['@attributes']['ExtSign'].$a['@attributes']['Text'];
+        if ($a['@attributes']['ExtSign']=="1048576") {
+           $fcKeyword[] .=$a['@attributes']['Text'];
+         }
+       }
+       $contentStr=$tempStr;
+
+       // $_SESSION['step'] =$_SESSION['step']+1;
+        $this->test(count($fcKeyword););           
+       
+       $storeName=$store->get_store_bySearch($this->wx_content);
+         // $this->test($storeName);
+
+          $foodName=$food->get_food_bySearch($this->wx_content);
+          $this->test($foodName."  ".$storeName);
+
+
+        echo $this->textXmlTpl($contentStr);
+
+
+
+
+
+
+
+
+
+
+
+
+//分词部分结束
+
+
+
+         
+            //
+            //关键字搜寻
+            //
+            //
+         //  $storeName=$store->get_store_bySearch($this->wx_content);
+         // // $this->test($storeName);
+
+         //  $foodName=$food->get_food_bySearch($this->wx_content);
+         //  $this->test($foodName."  ".$storeName);
+
+
+       // //第一步，检查用户注册，提示提供位置信息，以及上次登录信息
+       // if ($_SESSION['step']==0) {
+
+       //   echo $this->textXmlTpl("你要吃什么");
+
+
+       // }else{
+
+
+       //    //第二步，列出商家编号及所搜寻的食物
+       //  if ($_SESSION['step']==1) {
+       //   //搜索
+       //   $storeSearch=new Store();
+       //   //根据模糊商店名搜索
+       //    $StoreRt=$storeSearch->get_store_bySearch($this->wx_content);
+
+       //    if ($StoreRt) {
+            
+
+       //    }else{
+
+
+       //       $foodSearch=new Food();
+       //       $foodSearch->get_food_bySearch($this->wx_content);
+       //       if ($foodSearch) {
+
+
+
+       //       }else{
+
+
+
+
+       //       }
+
+       //    }
+
+       //    //第二步结束
+       //  }else{
+
+       //    //第三步，选择商家编号,回复食物信息
+       //    if ($_SESSION['step']==2) {
+
+       //        $store=new Store();
+       //      $storeInfo=$store->get_storeInfo_byID($this->wx_content);
+       //      if ($storeInfo) {
+                  
+       //      }else{
+
+
+
+       //      }
+       //    }else{
+
+       //      // 第四步，下单
+       //      if ($_SESSION['step']==3) {
+       //        $this->wx_content;
+       //        //分析数据
+       //      }
+
+
+
+       //    }
+
+
+       //  }
+
+
+
+       // }
+
+       
+
+
+       //echo $this->textXmlTpl($this->wx_content);
+      // echo $this->newsXmlTpl("测试图文","asufasifasnfasnfn    asafafgag","http://202.119.236.249/weixin/pic/2.jpg","http://202.119.236.249/weixin/common/database.php");
+		}
+		else{
+
+          $rangeArray=$this->calculate_range($this->wx_location_X,$this->wx_location_Y,1);
+   
+             $store=new Store();
+             $storeInfo=$store->get_srore_byLocation($rangeArray['maxLat'],$rangeArray['minLat'],$rangeArray['maxLng'],$rangeArray['minLng']);
+              $temp;
+              foreach ($storeInfo as $key => $value) {
+                $temp .="$value[0],";
+              }
+             
+              //$contentStr=$temp;
+             
+             $contentStr=$this->wx_location_X.'   '.$this->wx_location_Y.'      '.$this->wx_label.'  转化后:   '.$rangeArray['maxLat'].'   '.$rangeArray[
+               'minLat'].'    '.$rangeArray['maxLng'].'      '.$rangeArray['minLng'];
+            echo $this->textXmlTpl($contentStr);
+
+
+
+        }
+
+    }
+		
+	private function checkSignature()
+	{
+          $signature = $_GET["signature"];
+          $timestamp = $_GET["timestamp"];
+          $nonce = $_GET["nonce"];	
+        		
+		$token = TOKEN;
+		$tmpArr = array($token, $timestamp, $nonce);
+		sort($tmpArr);
+		$tmpStr = implode( $tmpArr );
+		$tmpStr = sha1( $tmpStr );
+		
+		if( $tmpStr == $signature ){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+
+    // 文本消息回复模板
+    public function textXmlTpl($contentStr)
+    {
+        
+                $time = time();
+                $textTpl = "<xml>
+                            <ToUserName><![CDATA[%s]]></ToUserName>
+                            <FromUserName><![CDATA[%s]]></FromUserName>
+                            <CreateTime>%s</CreateTime>
+                            <MsgType><![CDATA[%s]]></MsgType>
+                            <Content><![CDATA[%s]]></Content>
+                            <FuncFlag>0</FuncFlag>
+                            </xml>";             
+     
+                    $msgType = "text";
+                          
+                    $resultStr = sprintf($textTpl, $this->wx_fromUsername, $this->wx_toUsername, $time, $msgType, $contentStr);
+                    return $resultStr;
+             
+         
+    }
+
+    
+
+    // // 图文回复模板
+    public function newsXmlTpl($title,$description,$picurl,$url)
+    {
+
+        # code...
+        $time=time();
+        $newsTpl="  <xml>
+          <ToUserName><![CDATA[%s]]></ToUserName>
+           <FromUserName><![CDATA[%s]]></FromUserName>
+           <CreateTime>%s</CreateTime>
+         <MsgType><![CDATA[%s]]></MsgType>
+         <Content><![CDATA[%s]]></Content>
+     <ArticleCount>1</ArticleCount>
+     <Articles>
+     <item>
+     <Title><![CDATA[%s]]></Title>
+     <Discription><![CDATA[%s]]></Discription>
+     <PicUrl><![CDATA[%s]]></PicUrl>
+     <Url><![CDATA[%s]]></Url>
+     </item>
+     
+     
+     </Articles>
+     <FuncFlag>1</FuncFlag>
+    </xml> ";
+
+  
+        $MsgType="news";    
+       $resultStr=sprintf($newsTpl,$this->wx_fromUsername,$this->wx_toUsername,$time,$MsgType,$this->wx_content,$title,$description,$picurl,$url);
+
+        return $resultStr;
+        
+    }
+
+
+    //发送给商家的文本模板
+    public function givStoreXmlTpl($contentStr,$toStoreName)
+    {
+      // $time=time();
+      $time = time();
+                $textTpl = "<xml>
+                            <ToUserName><![CDATA[%s]]></ToUserName>
+                            <FromUserName><![CDATA[%s]]></FromUserName>
+                            <CreateTime>%s</CreateTime>
+                            <MsgType><![CDATA[%s]]></MsgType>
+                            <Content><![CDATA[%s]]></Content>
+                            <FuncFlag>0</FuncFlag>
+                            </xml>";             
+     
+                    $msgType = "text";
+                         // $this->wx_fromUsername, $this->wx_toUsername
+                    $resultStr = sprintf($textTpl,$toStoreName ,$this->wx_toUsername , $time, $msgType, $contentStr);
+                    return $resultStr;
+
+    }
+     
+
+
+    // 计算经纬度范围
+    // 
+    public function calculate_range($myLat,$myLng,$kilo)
+    {
+          $range = 180 / pi() * $kilo / 6372.797;     //里面的 1 就代表搜索 1km 之内，单位km  
+         $lngR = $range / cos($myLat * pi() / 180);  
+          $maxLat=bcadd($myLat,$range,15);  
+         $minLat=bcsub($myLat, $range,15);
+         $maxLng = bcadd($myLng, $lngR,15);//最大经度  
+            $minLng = bcsub($myLng, $lngR,15); 
+            $rangeArray=array("maxLat"=>$maxLat,"minLat"=>$minLat,"maxLng"=>$maxLng,"minLng"=>$minLng,"range"=>$range,"lngR"=>$lngR);
+            return $rangeArray;
+    }
+
+
+    // 获取命令
+    // 
+    public function get_command()
+    {
+      # code...
+      $str=$this->wx_content;
+      $command=substr($str, 0,6);
+      return $command;
+    }
+
+    //分析下单数据 （下单:店家编号（？名称），食物编号（？名称））？默认（命令）：地址，姓名，手机号
+    //
+    public function analyseOrderInfo()
+    {
+      // code...分割使用explode函数,返回一个函数
+      $str=$this->wx_content;
+     $orderDataArray= explode(',', substr($str, 7));
+      return $orderDataArray;
+
+    }
+
+
+    public function test($value)
+    {
+      echo $this->textXmlTpl($value);//
+      exit();
+    }
+
+
+}
+
+?>

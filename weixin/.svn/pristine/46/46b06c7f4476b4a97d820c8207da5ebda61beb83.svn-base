@@ -1,0 +1,87 @@
+<?php 
+   
+/**
+* 	
+*/
+header("Content-Type:text/html;charset=utf-8");
+class Database 
+{
+	private $host='localhost';
+	private $username='root';
+	private $password='861120';
+  private $database='weixin';
+  private $pconnect=0;
+  private $con;
+  private $result;
+
+	//构造函数.连接数据库	
+  public function Database()
+  {
+  	// code.
+   // $this->connect(); 
+  	$this->connect($this->host,$this->username,$this->password,$this->pconnect);
+    echo $this->result;
+  }
+
+  public function connect($host,$username,$password,$database,$pconnect)
+  {
+  	# code...
+    #判断持久连接
+    if ($pconnect===0) {
+       # code...
+       $this->con=mysql_connect($host,$username,$password);
+       if (!$this->con) {
+         // code...
+         $this->result="connectfaild";
+       }
+       else{
+        mysql_select_db($database);
+        mysql_set_charset("utf-8");
+        $this->result="connectsuccess";
+
+       }
+       
+     }
+     else{
+        $this->con=mysql_pconnect($host,$username,$password);
+        if (!$this->con) {
+          # code...
+          $this->result="connectfaild";
+        }else{
+          mysql_select_db($database);
+          mysql_set_charset("utf-8");
+          $this->con="connectsuccess";
+
+        }
+
+
+
+
+     } 
+  }
+
+  public function Create($value='')
+  {
+  	# code...
+  }
+
+  public function delete($value='')
+  {
+  	# code...
+  }
+
+public function update($value='')
+{
+	# code...
+}
+
+public function query($value='')
+{
+	# code...
+}
+
+}
+
+
+$test=new Database();
+ ?>

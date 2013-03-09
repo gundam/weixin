@@ -1,0 +1,67 @@
+<?php 
+
+	/**
+	* 订单类
+	*
+	* 1.生成订单
+	* 2.改变订单状态
+	* 3.获取一张订单
+	*
+	* //给后台
+	* 查看所有订单
+	* 
+	* 修改订单
+	* 删除订单
+	*/
+	require_once 'database.php';
+	class Order 
+	{
+		private $con;
+		function Order()
+		{
+			# code...
+			# 
+			$this->con=new Database();
+		}
+
+		public function create_order_status()
+		{
+			# code...
+		}
+
+		public function change_order()
+		{
+			# code...
+		}
+
+		public function get_one_order()
+		{
+			# code...
+		}
+
+
+
+
+
+
+		public function get_all_order()
+		{
+			# code...
+		}
+
+
+		public function change_order($value='')
+		{
+			# code...
+		}
+
+		public function delete_order()
+		{
+			# code...
+		}
+
+
+	}
+
+
+ ?>

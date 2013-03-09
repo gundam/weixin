@@ -1,0 +1,77 @@
+<?php 
+
+
+/**
+ * 用户类
+ * //后台
+ * 增加用户
+ * 查询用户
+ * 删除用户
+ *
+ * //
+ * 获取用户id
+ * 获取用户昵称/姓名
+ * 获取用户地址
+ * 获取用户手机号
+ * 获取用户历史订单记录（3张）
+ */
+	require_once 'database.php';]
+
+ class User 
+ {	
+ 	private $con;
+ 	
+ 	function User()
+ 	{
+ 		# code...
+ 		# 
+ 		$this->con=new Database();
+ 	}
+
+ 	//增加用户
+ 	public function add_user($value='')
+ 	{
+ 		# code...
+ 	}
+
+ 	//查询用户
+ 	//
+ 	public function find_user($value='')
+ 	{
+ 		# code...
+ 	}
+
+ 	public function del_user()
+ 	{
+ 		# code...
+ 	}
+
+
+
+    
+ 	// 获取用户id
+ 	// 
+ 	public function get_user_id()
+ 	{
+ 		# code...
+ 	}
+
+
+ 	// 获取用户昵称
+ 	// 
+ 	public function get_user_wxName()
+ 	{
+ 		# code...
+ 	}
+
+
+
+
+
+
+
+ } 
+
+
+
+ ?>

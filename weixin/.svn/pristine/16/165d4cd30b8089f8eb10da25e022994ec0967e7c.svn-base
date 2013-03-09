@@ -1,0 +1,43 @@
+<!DOCTYPE>
+
+<html>
+<meta charset="utf-8"/>
+	<title>商店管理</title>
+	<head>
+		
+			<style type="text/css">
+
+			#adminStore_add_div{
+
+				width: 400px;
+				
+				margin: 0 auto 0 auto;
+
+
+			}
+			</style>
+
+	</head>
+	<body>
+		<div id="adminStore_add_div">
+			
+
+			<form action="adminStore.php" method="post">
+			微信号:<input type="" name="wx_store_wxNumber"/><br>
+			店家名称:<input type="" name="wx_store_wxName"/><br>
+			店家地址:<input type="" name="wx_store_address"/><br>
+			经度:<input type="" name="wx_store_longitude"/><br>
+			纬度:<input type="" name="wx_store_latitude"/><br>
+			<input type="submit" value="确定">
+			<input type="reset" value="重置">
+
+
+
+		     </form>			
+
+		</div>
+		
+
+	</body>
+
+</html>

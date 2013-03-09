@@ -1,0 +1,88 @@
+<?php 
+	require_once("database.php");
+
+	$sql=new Database();
+
+	$action=$_REQUEST['action'];//获取动作
+
+	//增加商店
+	if ($action=='addStore') {
+		# code...
+	$id=$sql->get_total_number("wx_store")+1;
+	$wx_store_wxNumber  = $_REQUEST['wx_store_wxNumber'];
+	$wx_store_wxName	= $_REQUEST['wx_store_wxName'];
+	$wx_store_address	= $_REQUEST['wx_store_address'];
+	$wx_store_longitude	= $_REQUEST['wx_store_longitude'];//经度
+
+	$wx_store_latitude	= $_REQUEST['wx_store_latitude'];//纬度
+
+	
+	$data=array("wx_store_id"=>"1".$id,"wx_store_wxNumber"=>$wx_store_wxNumber,"wx_store_wxName"=>$wx_store_wxName,"wx_store_address"=>$wx_store_address,"wx_store_longitude"=>$wx_store_longitude,"wx_store_latitude"=>$wx_store_latitude);
+
+
+	echo $sql->insert("wx_store",$data);
+	
+    exit();
+	}
+
+
+
+
+	if ($action=='addFood') {
+			$id=$sql->get_total_number("wx_food")+1;
+			$wx_food_name  =$_REQUEST['wx_food_name'];
+			$wx_food_belong  =$_REQUEST['wx_food_belong'];
+			$wx_food_price  =$_REQUEST['wx_food_price'];
+			//$wx_food_img  =$_REQUEST['wx_food_img'];
+
+			$data=array("wx_food_id"=>"0".$id,"wx_food_name"=>$wx_food_name,"wx_food_belong"=>$wx_food_belong,"wx_food_price"=>$wx_food_price);
+			echo $sql->insert("wx_food",$data);
+
+			exit();
+	}
+
+
+	//增加用户
+	if ($action=='addUser') {
+		# code...
+		$wx_user_name		=$_REQUEST['wx_user_name'];
+		$wx_user_wxNumber	=$_REQUEST['wx_user_wxNumber'];
+		$wx_user_address	=$_REQUEST['wx_user_address'];
+		$wx_user_telphone	=$_REQUEST['wx_user_telphone'];
+
+
+		$data=array('wx_user_name'=>$wx_user_name,
+'wx_user_wxNumber'=>$wx_user_wxNumber,
+'wx_user_address'=>$wx_user_address,
+'wx_user_telphone'=>$wx_user_telphone
+			);
+
+		echo $sql->insert("wx_user",$data);
+		exit();
+	}
+
+
+	if ($action=='1') {
+		# code...
+		exit();
+	}
+
+	if ($action=='1') {
+		# code...
+		exit();
+	}
+
+	if ($action=='1') {
+		# code...
+		exit();
+	}
+
+
+	if ($action=='1') {
+		# code...
+		exit();
+	}
+
+	
+	
+ ?>

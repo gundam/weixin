@@ -1,0 +1,121 @@
+<?php 
+   
+/**
+* 	
+*/
+header("Content-Type:text/html;charset=utf-8");
+class Database 
+{
+	private $host='localhost';
+	private $username='root';
+	private $password='861120';
+  private $database='weixin';
+  private $pconnect=0;
+  private $con;
+  private $result;
+
+  private $feilds;
+  private $values;
+
+	//构造函数.连接数据库	
+  public function Database()
+  {
+  	// code.
+   // $this->connect(); 
+  	$this->connect($this->host,$this->username,$this->password,$this->database,$this->pconnect);
+    //echo $this->result;
+   // echo $this->result;
+  }
+
+  public function connect($host,$username,$password,$database,$pconnect)
+  {
+  	# code...
+    #判断持久连接
+    if ($pconnect===0) {
+       # code...
+       $this->con=mysql_connect($host,$username,$password);
+       if (!$this->con) {
+         // code...
+         $this->result="connectfaild";
+       }
+       else{
+        mysql_select_db($database);
+        mysql_set_charset("utf-8");
+        $this->result="connectsuccess";
+
+       }
+       
+     }
+     else{
+        $this->con=mysql_pconnect($host,$username,$password);
+        if (!$this->con) {
+          # code...
+          $this->result="connectfaild";
+        }else{
+          mysql_select_db($database);
+          mysql_set_charset("utf-8");
+          $this->result="pconnectsuccess";
+
+        }
+
+
+
+
+     } 
+  }
+
+  public function insert($table,$data)
+  { 
+
+    
+  	foreach ($data as $key => $value) {
+      $this->feilds .="$key,";
+      $this->values .="$value,";
+    }
+
+    $feilds=substr($this->feilds, 0,-1);
+    var_dump($this->feilds);
+      echo "<br>"; 
+      var_dump($feilds);
+    $values=substr($this->values, 0,-1);
+    echo "<br>";
+    var_dump($this->values);
+    echo "<br>";
+    var_dump($values);
+
+    $sql=$this->query("insert into $table ($feilds) values ($values)");
+
+    if ($sql) {
+      return $this->result="insert success";
+    }else{
+
+      return $this->result="insert faild";
+    }
+
+
+  }
+
+  public function delete($table,$data)
+  {
+  	# code...
+  }
+
+  public function update($table,$data)
+  {
+	# code...
+  }
+
+  public function query($str)
+  { 
+    $query=mysql_query($str);
+    
+
+    return $query;
+	   
+  }
+
+}
+
+
+// echo 
+ ?>

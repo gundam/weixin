@@ -1,0 +1,103 @@
+<?php 
+
+	/**
+	* 订单类
+	* 订单编号为4
+	* 1.生成订单
+	* 2.改变订单状态
+	* 3.获取一张订单
+	*
+	* //给后台
+	* 查看所有订单
+	* 
+	* 修改订单
+	* 删除订单
+	*/
+	require_once 'database.php';
+	class Order 
+	{
+		private $con;
+		function Order()
+		{
+			# code...
+			# 
+			$this->con=new Database();
+		}
+
+		public function add_order($wx_order_storeId,$wx_order_foodId,$wx_order_userId,$wx_order_address,$wx_order_telphone,$wx_order_valid)
+		
+		{
+
+
+
+			$data = array('wx_order_storeId' => $wx_order_storeId,'wx_order_foodId' =>$wx_order_foodId,'wx_order_userId'=>$wx_order_userId,'wx_order_address'=>$wx_order_address,'wx_order_telphone'=>$wx_order_telphone,'wx_order_valid'=>$wx_order_valid);
+			$rt=$this->con->insert("wx_order",$data);
+			if ($rt==true) {
+         $query="SELECT LAST_INSERT_ID()";
+                $result=mysql_query($query);
+                $rows=mysql_fetch_row($result);
+               return $rows[0];# code...
+			}
+			else{
+
+				return "false";
+
+			}
+
+
+			}
+		
+
+
+
+		public function create_order_status($status,$id)
+		{
+			$str="update wx_order set wx_order_valid=$status where wx_order_id=$id";
+			$rt=$this->con->query($str);
+			return $rt;
+		}
+
+		public function change_order()
+		{
+			# code...
+		}
+
+		public function get_one_order($id)
+		{
+				$data=$this->con->select("wx_order","wx_order_id",$id);
+				return $data;
+		}
+
+
+
+		public function get_latest_order($storeId)
+		{
+			$str="select * from wx_order where wx_order_storeId= '$storeId'";
+			$rt=$this->con->query($str);
+			while ( $temp =  mysql_fetch_array($rt)) {
+					$orderAll .=$temp.'   ';				
+			}
+			if (!isset($orderAll)) {
+				$orderAll='';
+			}
+			return $orderAll;
+		}
+
+
+		public function get_all_order()
+		{
+			# code...
+		}
+
+
+		
+		public function delete_order()
+		{
+			# code...
+		}
+
+
+	}
+
+
+ ?>

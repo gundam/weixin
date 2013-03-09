@@ -1,0 +1,128 @@
+<?php 
+
+	/**
+	 * 食品代号为0
+	* 食品类
+	*  获取食品id
+	*  获取食品单价
+	*  获取食品店家
+	*  获取食品名称
+	* .根据商店找食品
+	* 
+	* //后台
+	* 增加食品
+	* 删除食品
+	* 查询食品
+	* 
+	*/
+
+	require_once 'database.php';
+
+	class Food
+	{
+		private $con;
+		function Food()
+		{
+			# code...
+			$this->con=new Database();
+		}
+
+		// 获取食品id
+		public function get_food_id($value='')
+		{
+			
+		}
+		// 获取食品单价
+		public function get_food_price($wx_food_id)
+		{
+			$str="select * from wx_food where wx_food_id=$wx_food_id";
+			$rt=$this->con->query($str);
+
+			if (mysql_fetch_array($rt)) {
+				# code...
+			}
+			$content=mysql_fetch_array($rt);
+
+			return $content['wx_food_price'];
+
+
+
+		}
+
+		// 获取食品名称
+		// 
+		public function get_food_name($value='')
+		{
+			$str=""
+		}
+
+		//获取食品店家
+		//
+		public function get_food_belong($wx_food_id)
+		{
+					
+		}
+
+		// 根据商店找食品
+		// 
+		public function get_food_byStore($wx_store_id)
+		{
+			$str="select * from wx_food where wx_food_belong=$wx_store_id";
+			$sql=$this->con->query($str);
+			mysql_fetch_array($sql);
+			return $sql;
+
+		}
+		//模糊寻找食物
+	public function get-food-byLikeName($likeName)
+	{
+		
+		$str="select * from wx_food where wx_food_name like '%$likeName%'";
+		$sql	=	$this->con->query($str);
+		while ($temp=mysql_fetch_array($rt)) {
+					$foodNameArray[] .=$temp['wx_food_id'];
+					
+				}		
+
+	}
+
+
+
+
+
+
+		//增加食品
+
+		public function add_food($wx_food_name,$wx_food_belong,$wx_food_price,$wx_food_img)
+		{
+			$data=array("wx_food_name"=>$wx_food_name,"wx_food_belong"=>$wx_food_belong,"wx_food_price"=>$wx_food_price,"wx_food_img"=>$wx_food_img);
+			return $this->con->insert("wx_food",$data);
+
+		}
+
+
+		// 删除食品
+		// 
+		public function delete_food($value='')
+		{
+			
+		}
+
+
+		// 查询食品
+		// 
+		public function find_food($value='')
+		{
+			
+		}
+
+
+
+
+
+
+	}
+
+
+
+ ?>

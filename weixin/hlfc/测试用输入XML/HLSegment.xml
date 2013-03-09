@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+  
+  <Input>
+  	<Property Name="Uri">http://news.sina.com.cn/c/2011-05-23/220922515968.shtml</Property>
+  	<Property Name="Title">杭州原副市长受贿1.45亿不服死刑判决上诉</Property>
+    <Property Name="Content">中新网宁波5月23日电(记者 何蒋勇)5月12日，浙江省宁波市中级人民法院对杭州市原副市长许迈永受贿、贪污、滥用职权案作出一审判决，认定许迈永犯受贿罪，判处死刑，剥夺政治权利终身，并处没收个人全部财产；犯贪污罪，判处死刑，缓期二年执行，剥夺政治权利终身，并处没收个人全部财产；犯滥用职权罪，判处有期徒刑十年，决定执行死刑，剥夺政治权利终身，并处没收个人全部财产。记者最新获悉，目前，许迈永不服一审判决，提起上诉。
+
+　　宁波市中级人民法院经审理查明：1995年5月至2009年4月间，许迈永利用担任萧山市副市长、杭州市西湖区代区长、区长、区委书记、杭州市副市长等职务上的便利，为有关单位和个人在取得土地使用权、享受税收优惠政策、受让项目股权、承建工程、结算工程款、解决亲属就业等事项上谋取利益，收受、索取他人财物共计折合人民币1.45亿余元。许迈永还利用担任国有公司杭州金港实业有限公司董事长的职务便利，侵吞国有资产共计人民币5300万余元。此外，许迈永在任杭州市西湖区区长、区委书记期间，还徇私舞弊滥用职权，违规退还有关公司土地出让金7100万余元，造成特别恶劣的社会影响。
+　　宁波市中级人民法院认为，许迈永身为国家工作人员，利用职务上的便利，为他人谋取利益，非法收受、索取他人财物，其行为已构成受贿罪；许迈永利用职务上的便利侵吞国有资产，其行为构成贪污罪；许迈永为徇私利滥用职权，违规返还巨额土地出让金，致使国家利益遭受重大损失，其行为还构成滥用职权罪。许迈永受贿数额特别巨大，且具有索贿情节，犯罪情节特别严重；贪污国有资产数额特别巨大，情节特别严重，鉴于其案发后赃款已全部追缴，对其判处死刑，可不立即执行；徇私舞弊滥用职权行为严重损害了政府的形象和声誉，致使国家利益遭受重大损失，情节特别严重，应依法严惩。宁波市中级人民法院遂依法作出上述判决。(完)</Property>
+  	<Property Name="Date">2011年05月23日22:09</Property>
+  </Input>
+ 
+  <ProcessList Template="">
+    <Resource ID="1" Adapter="DA_hlsegment" OutputXml="true"  IgnoreFailed="true">
+    	<Param Name="Input" Value="Content" />
+		  <Param Name="Output" Value="HLSegToken" />
+		  <Param Name="CustomCalcSign" Value="POS_TAG" />
+		  <Param Name="OutputFieldSign" Value="" />
+    </Resource>
+    <Resource ID="2" Adapter="ClearSegmentProxy" OutputXml="false" IgnoreFailed="true" /> 
+  </ProcessList>
+</Root>

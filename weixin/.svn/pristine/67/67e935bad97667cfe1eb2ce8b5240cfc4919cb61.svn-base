@@ -1,0 +1,122 @@
+<!DOCTYPE>
+
+<html>
+<meta charset="utf-8"/>
+	<title>商店管理</title>
+	<head>
+			<script type="text/javascript" src="../file/js/jquery-1.7.2.min.js"></script>
+		
+			<style type="text/css">
+
+			#adminStore_add_div{
+
+				width: 400px;
+				
+				margin: 0 auto 0 auto;
+
+
+			}
+			</style>
+
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					//获取商店名称
+					$.get();
+				});
+				
+
+			</script>
+
+	</head>
+	<body>
+		<div id="adminStore_add_div">
+			<fieldset>
+				
+				<legend>增加商店:</legend>
+			<form action="admin.php" method="post" target="_blank">
+
+			<input type="" name="action" value="addStore" hidden>
+			
+			微信号:<input type="" name="wx_store_wxNumber"/><br>
+			店家名称:<input type="" name="wx_store_wxName"/><br>
+			店家地址:<input type="" name="wx_store_address"/><br>
+			经度:<input type="" name="wx_store_longitude"/><br>
+			纬度:<input type="" name="wx_store_latitude"/><br>
+			<input type="submit" value="确定">
+			<input type="reset" value="重置">
+
+
+
+		     </form>
+
+
+			</fieldset>	
+
+
+			<fieldset>
+				<legend>增加食物</legend>
+				<form action="admin.php" action="post" target="_blank">
+					<input type="text"	name="action"	value="addFood"	hidden>
+					食物名:<input type="text"	name="wx_food_name"><br>
+					店家:<input type="text"	name="wx_food_belong"><br>
+					价格:<input type="text"	name="wx_food_price"><br>
+					图片:<input type="file" name="wx_food_img" value="null"><br>
+					<input type="submit" value="确认">
+					<input type="reset" value="重置">
+
+
+
+				</form>
+
+
+			</fieldset>
+
+
+			<fieldset>
+				<legend>增加用户</legend>
+				<form action="admin.php" action="post">
+					<input type="" name="action" value="addUser" hidden>
+					用户名:<input type="" name="wx_user_name"/><br>
+					微信号:<input type="" name="wx_user_wxNumber" ><br>
+					常用地址:<input type="" name="wx_user_address" ><br>
+					手机号:<input type="" name="wx_user_telphone" ><br>
+					<input type="submit" value="确定">
+					<input type="reset" value="取消">
+
+
+
+				</form>
+
+
+			</fieldset>
+
+
+			<fieldset>
+				<legend>增加食物</legend>
+				<form action="admin.php" action="post">
+					<input type="">
+					<input type="">
+					<input type="">
+					<input type="">
+					<input type="">
+					<input type="">
+					<input type="">
+					<input type="">
+
+
+
+				</form>
+
+
+			</fieldset>
+			
+
+
+
+
+		</div>
+		
+
+	</body>
+
+</html>

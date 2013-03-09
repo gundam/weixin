@@ -1,0 +1,37 @@
+<?php 
+
+/**
+* 分词类
+*/
+require_once("./platform_api.php");		
+class Hlfc
+{
+	private $surl="http://freeapi.hylanda.com/rest/se/segment/realtime";
+	private $sSecret= '1c34c03e0c95151f278272d90c8dc1a2b1e05770';
+	private $sAppkey='5815049766379871523';
+	function __construct($content)
+	{
+		echo $params['appkey']=$this->sAppkey;
+		echo $params['v']='1.0';
+		echo $params['time']=time();		
+		echo $params['xmlparam']=$content;
+		echo $params['format']='JSON';
+
+
+		$api = new platform_api($this->sSecret);
+
+		$ret = $api->execute($this->surl,$params);
+
+		if ($ret === false) {
+			echo "请求失败";
+		}else{
+				
+
+			echo '<br>'.$ret;
+		}
+	}
+}
+
+new Hlfc("测试内容");
+
+ ?>

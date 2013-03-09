@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+
+</head>
+<body>
+ 	<form action="collectAnswer.php" method="post">
+ 		
+ 		<p>你要点外卖的话,要你打字打下来的话会怎么写呢～
+
+ 			<br>
+
+ 		</p>
+ 		<input type="text" name="answer"/>
+
+ 		<input type="submit" value="提交"/>	
+ 	</form>
+</body>
+</html>

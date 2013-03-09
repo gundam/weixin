@@ -1,0 +1,16 @@
+<?php 
+
+/**
+* 分词类
+*/
+require_once("./platform_api.php");		
+class Hlfc
+{
+	
+	function __construct($content)
+	{
+		
+	}
+}
+
+ ?>

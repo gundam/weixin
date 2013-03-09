@@ -1,0 +1,32 @@
+微信外卖平台
+
+微信自定义回复接口
+海量分词服务
+讯飞语音集成
+
+
+weixin----
+  |
+  |---common
+  		|
+  		|---admin.html
+  		|	admin.php
+  		|	database.php
+  		|	food.php
+  		|	order.php
+  		|	store.php
+  		|	test.php
+  		|	user.php
+  |---file
+  		|
+  		|---js
+  			|--jquery.1.7.2.min.js
+  		|---应用概述.txt
+  		|---经纬度记录
+  |---hlfc
+  |		
+  |
+  |---pic
+  |
+  |
+  |---wx_sample.php

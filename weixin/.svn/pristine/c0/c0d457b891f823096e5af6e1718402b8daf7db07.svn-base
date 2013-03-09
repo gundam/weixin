@@ -1,0 +1,19 @@
+<?php 
+
+	/**
+	* 工作流类
+	*/
+	class Workflow 
+	{
+		
+		function __construct()
+		{
+			echo "asdsad";
+		}
+
+
+	}
+
+	new Workflow();
+
+ ?>

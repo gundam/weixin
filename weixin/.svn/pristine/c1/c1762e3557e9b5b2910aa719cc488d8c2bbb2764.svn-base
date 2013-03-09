@@ -1,0 +1,83 @@
+<?php 
+  /**
+  * 商店类
+  * 1.查询商店id
+  * 2.查询商店名称
+  * 3.查询商店号码
+  * 4.查询商店经纬度
+  * 5.查询商店地址
+  * 
+  * 7.*根据经纬度获取附近商家
+  * 
+  * //给后台
+  * 列出所有商店名称
+  * 增加店家
+  * 删除店家			
+  */
+  require_once 'database.php';
+  class Store 
+  {	
+  	private $con;
+  	
+  	function Store()
+  	{
+  		$this->con=new Database();
+  	}
+
+  	//@1查询商家id
+  	//
+  	public function get_store_id()
+  	{
+  		# code...
+  		
+  	}
+
+  	// 查询商店名称
+  	// 
+  	public function get_store_wxName()
+  	{
+  		# code...
+  	}
+
+
+
+  	// 查询商店号码
+  	// 
+  	public function get_store_wxNumber()
+  	{
+  		# code...
+  	}
+
+  	// 查询商店经纬度
+  	// 
+  	
+  	public function get_store_location()
+  	{
+  		# code...
+  	}
+  	// 查询商店地址
+  	// 
+
+  	// 后台
+  	// 列出所有商店名称
+  	// 
+  	public function get_all_store_wxName()
+  	{
+  		# code...
+  	}
+
+
+  	//根据经纬度获取附近商家
+  	//
+  	public function get_srore_byLocation($value='')
+  	{
+  		# code...
+  	}
+
+
+  }
+
+
+
+
+ ?>

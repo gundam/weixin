@@ -1,0 +1,23 @@
+<?php 
+
+	/**
+	* 日志类，用于记录过程和时间优化
+	*/
+	class Log
+	{
+		private $fp;
+		function Log()
+		{
+			$this->fp = fopen("test.txt", "a+");
+
+		}
+			public function log($string)
+			{
+					fwrite($this->fp, "test\ntest");
+			}
+
+	}
+
+
+
+ ?>

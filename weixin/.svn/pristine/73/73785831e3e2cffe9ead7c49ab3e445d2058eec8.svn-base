@@ -1,0 +1,33 @@
+<?php
+ header("Content-type: text/html;charset=utf-8");
+if($_REQUEST['content'] == "" || $_REQUEST['url'] == "")
+{
+	$ret = "输入不能为空";
+	echo $ret;
+	exit();
+}
+else 
+{
+	include_once("./platform_api.php");
+	 $content =  $_REQUEST['content'];
+	 $sUrl    =  $_REQUEST['url'];
+ 	 $sSecret =  $_REQUEST['secret'];
+	 $sAppKey =  $_REQUEST['appkey'];	
+	 $params['appkey'] = $sAppKey;
+	 $params['v'] = '1.0';
+	 $params['time'] = time();//1305690837;//time();
+	 $params['xmlparam'] = $content;	
+	 $params['format']='JSON';
+	
+	$api = new platform_api($sSecret);
+	$ret = $api->execute($sUrl, $params);
+	if($ret === false)
+		echo "服务请求失败！";
+	else
+	{
+		
+		echo  $ret;
+		//echo  json_encode($ret);
+	}
+}
+?>
